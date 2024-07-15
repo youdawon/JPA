@@ -1,0 +1,80 @@
+buildscript {
+    ext {
+        queryDslVersion = "4.3.0"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+}
+
+group = 'jpa'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+apply plugin: "com.ewerk.gradle.plugins.querydsl"
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "Hoxton.SR12")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'com.oracle.database.jdbc:ojdbc8'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.apache.httpcomponents:httpclient:4.4.1'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'com.oracle.database.jdbc:ojdbc8'
+    apply plugin: "io.spring.dependency-management"
+
+    // query dsl
+    implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-apt'
+    annotationProcessor 'com.querydsl:querydsl-apt'
+
+    //model mapper
+    implementation('org.modelmapper:modelmapper:2.4.5')
+
+    //apache common
+    implementation('org.apache.commons:commons-lang3:3.11')
+}
+
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+    library = "com.querydsl:querydsl-apt"
+}
+sourceSets {
+    main.java.srcDir querydslDir
+}
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}

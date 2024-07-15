@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    auth:
+      url: jdbc:oracle:thin:@localhost:1521:XE
+      username: test
+      password: test213123
+      driver-class-name: oracle.jdbc.driver.OracleDriver
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+
+user:
+  password:
+    salt: ##sha 512 추가 필요
+    expiring-day: 90
+logging:
+  level:
+    root: debug
+jpa:
+  properties:
+    hibernate:
+      format_sql: true
